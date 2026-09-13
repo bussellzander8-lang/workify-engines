@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workify Engines Pro - Advanced Engine Builder</title>
+    <link rel="stylesheet" href="styles-pro.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <h1>⚙️ Workify Engines PRO</h1>
+                <p>Build, Customize & Paint Your Dream Engine! 🔧🎨</p>
+            </div>
+            <div class="header-right">
+                <button id="vehicleSelect" class="btn-header">🚗 Car</button>
+                <button id="zoomIn" class="btn-header" title="Zoom In">🔍+</button>
+                <button id="zoomOut" class="btn-header" title="Zoom Out">🔍-</button>
+                <button id="soundToggle" class="btn-header">🔊 Sound</button>
+            </div>
+        </header>
+
+        <div class="main-layout">
+            <!-- Left Sidebar - Parts Panel -->
+            <div class="sidebar left-sidebar">
+                <div class="panel parts-panel">
+                    <h2>Engine Parts</h2>
+                    <div class="tabs">
+                        <button class="tab-btn active" data-category="engine">🔩 Engine</button>
+                        <button class="tab-btn" data-category="drivetrain">⚙️ Drive</button>
+                        <button class="tab-btn" data-category="control">🎮 Control</button>
+                        <button class="tab-btn" data-category="electrical">⚡ Electric</button>
+                        <button class="tab-btn" data-category="turbo">🚀 Turbo</button>
+                        <button class="tab-btn" data-category="cosmetic">🎨 Cosmetic</button>
+                    </div>
+                    <div class="parts-list" id="partsList"></div>
+                </div>
+            </div>
+
+            <!-- Center - Engine Canvas -->
+            <div class="center-section">
+                <div class="canvas-wrapper">
+                    <canvas id="engineCanvas" width="800" height="600"></canvas>
+                    <div class="canvas-overlay">
+                        <p id="canvasHint" style="color: #999; text-align: center; margin-top: 250px;">Drag parts here • Double-tap to customize</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar - Stats & Controls -->
+            <div class="sidebar right-sidebar">
+                <div class="panel stats-panel">
+                    <h2>Engine Stats</h2>
+                    <div class="stats-grid">
+                        <div class="stat">
+                            <label>Power:</label>
+                            <span id="powerStat">0 HP</span>
+                        </div>
+                        <div class="stat">
+                            <label>Torque:</label>
+                            <span id="torqueStat">0 Nm</span>
+                        </div>
+                        <div class="stat">
+                            <label>Efficiency:</label>
+                            <span id="efficiencyStat">0%</span>
+                        </div>
+                        <div class="stat">
+                            <label>RPM:</label>
+                            <span id="rpmStat">0</span>
+                        </div>
+                        <div class="stat">
+                            <label>Temperature:</label>
+                            <span id="tempStat">0°C</span>
+                        </div>
+                        <div class="stat">
+                            <label>Voltage:</label>
+                            <span id="voltageStat">0V</span>
+                        </div>
+                        <div class="stat">
+                            <label>Cost:</label>
+                            <span id="costStat">$0</span>
+                        </div>
+                        <div class="stat">
+                            <label>Parts:</label>
+                            <span id="partCountStat">0/15</span>
+                        </div>
+                    </div>
+                    
+                    <div class="vehicle-display">
+                        <h3>Vehicle Preview</h3>
+                        <div id="vehicleIcon" style="font-size: 3em; text-align: center;">🚗</div>
+                        <p id="vehicleStatus" style="text-align: center; color: #999;">No engine mounted</p>
+                    </div>
+
+                    <button id="testButton" class="btn btn-primary">🧪 Test Engine</button>
+                    <button id="revButton" class="btn btn-secondary">💨 Rev Engine</button>
+                    <button id="paintButton" class="btn btn-paint">🎨 Paint & Decals</button>
+                    <button id="clearButton" class="btn btn-danger">🗑️ Clear</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customization Modal -->
+        <div id="customizeModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="customizeTitle">Customize Part</h2>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="customize-options">
+                        <div class="option-group">
+                            <label>Size:</label>
+                            <input type="range" id="sizeSlider" min="0.5" max="2" step="0.1" value="1">
+                            <span id="sizeValue">100%</span>
+                        </div>
+                        <div class="option-group">
+                            <label>Color:</label>
+                            <input type="color" id="colorPicker" value="#667eea">
+                        </div>
+                        <div class="option-group">
+                            <label>Pair With:</label>
+                            <select id="pairSelect">
+                                <option value="">-- Select Part --</option>
+                            </select>
+                        </div>
+                        <div class="option-group">
+                            <label>Pitch:</label>
+                            <input type="range" id="pitchSlider" min="50" max="2000" step="50" value="400">
+                            <span id="pitchValue">400 Hz</span>
+                        </div>
+                        <div class="option-group">
+                            <label>Rotation:</label>
+                            <input type="range" id="rotationSlider" min="0" max="360" step="15" value="0">
+                            <span id="rotationValue">0°</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="applyCustomize" class="btn btn-primary">Apply</button>
+                    <button id="cancelCustomize" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paint Modal -->
+        <div id="paintModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Paint & Customize</h2>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="paint-options">
+                        <div class="paint-section">
+                            <h3>Engine Color</h3>
+                            <div class="color-picker-grid" id="engineColors"></div>
+                        </div>
+                        <div class="paint-section">
+                            <h3>Add Decals</h3>
+                            <div class="decals-grid" id="decalsGrid"></div>
+                        </div>
+                        <div class="paint-section">
+                            <h3>LED Colors</h3>
+                            <div class="led-colors" id="ledColors"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vehicle Select Modal -->
+        <div id="vehicleModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Select Vehicle Type</h2>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="vehicle-grid" id="vehicleGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script-pro.js"></script>
+</body>
+</html>
