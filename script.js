@@ -1,5 +1,5 @@
 // ============================================
-// WORKIFY ENGINES - Complete Game Engine
+// WORKIFY ENGINES - Complete Game Engine + SOUND
 // ============================================
 
 // Game State Management
@@ -17,55 +17,67 @@ let gameStats = {
     totalPartsUsed: 0
 };
 
-// Part Stats with costs
+// Audio Context for Sound Generation
+let audioContext = null;
+let soundEnabled = true;
+
+// Part Stats with costs and sound profiles
 const partStats = {
     piston: { 
         power: 10, 
         efficiency: 5, 
         cost: 50,
-        description: "Basic component that converts combustion into motion"
+        description: "Basic component that converts combustion into motion",
+        sound: { pitch: 400, tone: "crisp", frequency: 200 }
     },
     cylinder: { 
         power: 15, 
         efficiency: 8, 
         cost: 75,
-        description: "Contains the combustion chamber"
+        description: "Contains the combustion chamber",
+        sound: { pitch: 350, tone: "deep", frequency: 150 }
     },
     crankshaft: { 
         power: 20, 
         efficiency: 10, 
         cost: 150,
-        description: "Converts linear motion to rotational motion"
+        description: "Converts linear motion to rotational motion",
+        sound: { pitch: 300, tone: "smooth", frequency: 120 }
     },
     "fuel-injector": { 
         power: 5, 
         efficiency: 15, 
         cost: 100,
-        description: "Improves fuel efficiency and delivery"
+        description: "Improves fuel efficiency and delivery",
+        sound: { pitch: 500, tone: "sharp", frequency: 250 }
     },
     "spark-plug": { 
         power: 8, 
         efficiency: 12, 
         cost: 40,
-        description: "Creates the spark for combustion"
+        description: "Creates the spark for combustion",
+        sound: { pitch: 600, tone: "electric", frequency: 300 }
     },
     valve: { 
         power: 3, 
         efficiency: 10, 
         cost: 30,
-        description: "Controls air and fuel flow"
+        description: "Controls air and fuel flow",
+        sound: { pitch: 450, tone: "metallic", frequency: 180 }
     },
     turbo: {
         power: 35,
         efficiency: 5,
         cost: 250,
-        description: "Boosts engine power significantly"
+        description: "Boosts engine power significantly",
+        sound: { pitch: 800, tone: "whistling", frequency: 400 }
     },
     cooler: {
         power: 0,
         efficiency: 20,
         cost: 120,
-        description: "Keeps engine cool and efficient"
+        description: "Keeps engine cool and efficient",
+        sound: { pitch: 350, tone: "cool", frequency: 100 }
     }
 };
 
@@ -112,6 +124,97 @@ engineCanvas.addEventListener("dragleave", handleDragLeave);
 
 let draggedPart = null;
 let draggedElement = null;
+
+// ============================================
+// SOUND SYSTEM
+// ============================================
+
+function initAudioContext() {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    return audioContext;
+}
+
+function playEngineSound() {
+    if (!soundEnabled) return;
+    
+    try {
+        const ctx = initAudioContext();
+        const now = ctx.currentTime;
+        const duration = 2;
+        
+        // Calculate average sound characteristics from parts
+        let avgPitch = 400;
+        let totalPower = 0;
+        let totalFrequency = 0;
+        
+        if (engine.parts.length > 0) {
+            engine.parts.forEach(part => {
+                const sound = partStats[part].sound;
+                avgPitch += sound.pitch;
+                totalFrequency += sound.frequency;
+                totalPower += partStats[part].power;
+            });
+            
+            avgPitch = avgPitch / (engine.parts.length + 1);
+            totalFrequency = totalFrequency / engine.parts.length;
+        }
+        
+        // Create oscillators for each part type
+        const partTypes = [...new Set(engine.parts)];
+        
+        partTypes.forEach((partType, index) => {
+            const partSound = partStats[partType].sound;
+            const oscillator = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            oscillator.connect(gain);
+            gain.connect(ctx.destination);
+            
+            // Vary pitch based on part
+            oscillator.frequency.setValueAtTime(partSound.pitch, now);
+            oscillator.frequency.exponentialRampToValueAtTime(partSound.pitch * 0.8, now + duration);
+            
+            // Volume based on power contribution
+            const partPower = engine.parts.filter(p => p === partType).length;
+            gain.gain.setValueAtTime(0.1 * (partPower / engine.parts.length), now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+            
+            // Different waveforms for different parts
+            if (partType === "turbo") {
+                oscillator.type = "square";
+            } else if (partType === "spark-plug") {
+                oscillator.type = "triangle";
+            } else {
+                oscillator.type = "sine";
+            }
+            
+            oscillator.start(now);
+            oscillator.stop(now + duration);
+        });
+        
+        // Add engine rumble bass
+        const bass = ctx.createOscillator();
+        const bassGain = ctx.createGain();
+        
+        bass.connect(bassGain);
+        bassGain.connect(ctx.destination);
+        
+        bass.type = "sine";
+        bass.frequency.setValueAtTime(totalFrequency, now);
+        bass.frequency.exponentialRampToValueAtTime(totalFrequency * 0.6, now + duration);
+        
+        bassGain.gain.setValueAtTime(0.15, now);
+        bassGain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+        
+        bass.start(now);
+        bass.stop(now + duration);
+        
+    } catch(e) {
+        console.error("Error playing sound:", e);
+    }
+}
 
 // ============================================
 // DRAG & DROP HANDLERS
@@ -268,6 +371,9 @@ function testEngine() {
         return;
     }
 
+    // Play engine sound!
+    playEngineSound();
+    
     const performance = calculateEnginePerformance();
     
     gameStats.enginesTested++;
@@ -289,6 +395,7 @@ function testEngine() {
 💪 Power Output: ${engine.power} HP
 ⚡ Efficiency: ${engine.efficiency}%
 💰 Cost: $${engine.totalCost}
+🔊 Engine Sound: Playing!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📊 PERFORMANCE RATING: ${performance.rating}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -321,6 +428,7 @@ function showPartTooltip(e) {
     if (!partStats[partType]) return;
     
     const stats = partStats[partType];
+    const sound = stats.sound;
     
     const tooltip = document.createElement("div");
     tooltip.className = "tooltip";
@@ -329,6 +437,7 @@ function showPartTooltip(e) {
         Power: +${stats.power}<br>
         Efficiency: +${stats.efficiency}%<br>
         Cost: $${stats.cost}<br>
+        🔊 Tone: ${sound.tone}<br>
         <small>${stats.description}</small>
     `;
     tooltip.style.position = "absolute";
@@ -477,7 +586,7 @@ function initializeGame() {
     loadStatsFromLocalStorage();
     updateEngineDisplay();
     updateStats();
-    showNotification("Welcome to Workify Engines! 🚗");
+    showNotification("Welcome to Workify Engines! 🔊 Click Test to hear your engine!");
 }
 
 // Start the game
