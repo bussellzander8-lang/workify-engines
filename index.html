@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workify Engines - Engine Builder Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚙️ Workify Engines</h1>
+            <p>Build custom engines and assemble them into working cars!</p>
+        </header>
+
+        <div class="game-layout">
+            <!-- Parts Library -->
+            <div class="parts-panel">
+                <h2>Engine Parts</h2>
+                <div class="parts-list">
+                    <div class="part" draggable="true" data-type="piston">
+                        <span>🔩 Piston</span>
+                    </div>
+                    <div class="part" draggable="true" data-type="cylinder">
+                        <span>🔲 Cylinder</span>
+                    </div>
+                    <div class="part" draggable="true" data-type="crankshaft">
+                        <span>↻ Crankshaft</span>
+                    </div>
+                    <div class="part" draggable="true" data-type="fuel-injector">
+                        <span>💧 Fuel Injector</span>
+                    </div>
+                    <div class="part" draggable="true" data-type="spark-plug">
+                        <span>⚡ Spark Plug</span>
+                    </div>
+                    <div class="part" draggable="true" data-type="valve">
+                        <span>🚪 Valve</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Build Area -->
+            <div class="build-area">
+                <div class="workspace">
+                    <h2>Your Engine</h2>
+                    <div class="engine-canvas" id="engineCanvas">
+                        <p style="color: #999;">Drag parts here to build your engine</p>
+                    </div>
+                </div>
+
+                <div class="car-preview">
+                    <h2>Your Car</h2>
+                    <div class="car-display">
+                        <div class="car-body">🚗</div>
+                        <p id="carStatus">Attach an engine to your car!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Panel -->
+            <div class="stats-panel">
+                <h2>Engine Stats</h2>
+                <div class="stats">
+                    <div class="stat">
+                        <label>Power:</label>
+                        <span id="powerStat">0 HP</span>
+                    </div>
+                    <div class="stat">
+                        <label>Efficiency:</label>
+                        <span id="efficiencyStat">0%</span>
+                    </div>
+                    <div class="stat">
+                        <label>Parts Used:</label>
+                        <span id="partCountStat">0/10</span>
+                    </div>
+                </div>
+                <button id="testButton" class="btn">🧪 Test Engine</button>
+                <button id="clearButton" class="btn btn-danger">🗑️ Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
