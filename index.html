@@ -10,7 +10,7 @@
     <div class="container">
         <header>
             <h1>⚙️ Workify Engines</h1>
-            <p>Build custom engines and assemble them into working cars!</p>
+            <p>Build custom engines and assemble them into working cars! 🚗</p>
         </header>
 
         <div class="game-layout">
@@ -36,7 +36,14 @@
                     <div class="part" draggable="true" data-type="valve">
                         <span>🚪 Valve</span>
                     </div>
+                    <div class="part" draggable="true" data-type="turbo">
+                        <span>🌪️ Turbo</span>
+                    </div>
+                    <div class="part" draggable="true" data-type="cooler">
+                        <span>❄️ Cooler</span>
+                    </div>
                 </div>
+                <p style="color: #999; font-size: 0.85em; margin-top: 15px;">💡 Hover over parts for details</p>
             </div>
 
             <!-- Main Build Area -->
@@ -73,9 +80,17 @@
                         <label>Parts Used:</label>
                         <span id="partCountStat">0/10</span>
                     </div>
+                    <div class="stat">
+                        <label>Total Cost:</label>
+                        <span id="costStat">$0</span>
+                    </div>
                 </div>
                 <button id="testButton" class="btn">🧪 Test Engine</button>
                 <button id="clearButton" class="btn btn-danger">🗑️ Clear</button>
+                <p style="color: #999; font-size: 0.8em; margin-top: 10px; text-align: center;">
+                    ⌨️ Enter to test<br>
+                    Backspace to remove last part
+                </p>
             </div>
         </div>
     </div>
